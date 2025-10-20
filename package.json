@@ -14,7 +14,7 @@
     "db:migrate": "tsx scripts/migrate.ts",
     "db:studio": "drizzle-kit studio",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
-    "prepare": "cd ../.. && husky install apps/bolt-vercel/.husky",
+    "prepare": "husky install",
     "generate-sample": "tsx scripts/generate-sample.ts"
   },
   "dependencies": {

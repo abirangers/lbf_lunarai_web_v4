@@ -15,7 +15,8 @@
     "db:studio": "drizzle-kit studio",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "prepare": "husky install",
-    "generate-sample": "tsx scripts/generate-sample.ts"
+    "generate-sample": "tsx scripts/generate-sample.ts",
+    "postinstall": "echo 'Dependencies installed successfully'"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
@@ -85,5 +86,9 @@
     "*.{json,css,md}": [
       "prettier --write"
     ]
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   }
 }

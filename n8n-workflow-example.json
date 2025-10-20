@@ -1,0 +1,231 @@
+{
+  "name": "LBF Skincare Analysis - Example Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lbf_skincare",
+        "authentication": "headerAuth",
+        "options": {
+          "headerName": "X-Webhook-Secret",
+          "headerValue": "={{ $env.N8N_WEBHOOK_SECRET }}"
+        }
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "lbf_skincare_webhook"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Validate webhook secret\nconst receivedSecret = $node['Webhook'].context['headers']['x-webhook-secret'];\nconst expectedSecret = $env.N8N_WEBHOOK_SECRET;\n\nif (receivedSecret !== expectedSecret) {\n  throw new Error('Unauthorized: Invalid webhook secret');\n}\n\n// Validate required fields\nconst payload = $input.item.json;\nconst required = ['submissionId', 'brand', 'productBlueprint', 'targetEnvironment'];\n\nfor (const field of required) {\n  if (!payload[field]) {\n    throw new Error(`Missing required field: ${field}`);\n  }\n}\n\n// Log submission\nconsole.log('✅ Valid submission received:', payload.submissionId);\nconsole.log('🎯 Environment:', payload.targetEnvironment);\nconsole.log('🏢 Brand:', payload.brand.name);\n\nreturn $input.item;"
+      },
+      "name": "Validate Payload",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract key information for analysis\nconst payload = $input.item.json;\n\nconst analysisContext = {\n  submissionId: payload.submissionId,\n  environment: payload.targetEnvironment,\n  \n  // Brand context\n  brand: {\n    name: payload.brand.name,\n    voice: payload.brand.voice,\n    values: payload.brand.values\n  },\n  \n  // Product details\n  product: {\n    functions: payload.productBlueprint.functions,\n    formType: payload.productBlueprint.formType,\n    packaging: payload.productBlueprint.packagingType,\n    netto: payload.productBlueprint.netto\n  },\n  \n  // Ingredients\n  ingredients: payload.ingredients.map(ing => ({\n    name: ing.name,\n    percentage: ing.percentage,\n    purpose: ing.purpose\n  })),\n  \n  // Target market\n  market: {\n    gender: payload.targetMarket.gender,\n    ageRanges: payload.targetMarket.ageRanges,\n    location: payload.targetMarket.geography\n  },\n  \n  // Business context\n  business: {\n    distribution: payload.businessContext.distributionFocus,\n    sustainability: payload.businessContext.sustainabilityPriority,\n    regulatory: payload.businessContext.regulatoryPriority\n  }\n};\n\nreturn { json: analysisContext };"
+      },
+      "name": "Prepare Analysis Context",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {},
+      "name": "Split Analysis Tasks",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "resource": "text",
+        "operation": "message",
+        "model": "gpt-4",
+        "prompt": "=Analyze this skincare brand and product concept:\n\nBrand: {{ $json.brand.name }}\nVoice: {{ $json.brand.voice }}\nValues: {{ $json.brand.values }}\n\nProduct Type: {{ $json.product.formType }}\nFunctions: {{ $json.product.functions.join(', ') }}\nKey Ingredients: {{ $json.ingredients.map(i => `${i.name} (${i.percentage}%)`).join(', ') }}\n\nTarget Market:\n- Gender: {{ $json.market.gender }}\n- Age: {{ $json.market.ageRanges.join(', ') }}\n- Location: {{ $json.market.location.country }}\n\nProvide:\n1. Brand positioning analysis\n2. Product concept evaluation\n3. Market fit assessment\n4. Competitive advantages\n5. Recommendations for improvement"
+      },
+      "name": "AI Brand Analysis",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [1050, 200]
+    },
+    {
+      "parameters": {
+        "resource": "text",
+        "operation": "message",
+        "model": "gpt-4",
+        "prompt": "=Create a detailed product blueprint for:\n\nProduct: {{ $json.product.formType }}\nFunctions: {{ $json.product.functions.join(', ') }}\nPackaging: {{ $json.product.packaging }}\nSize: {{ $json.product.netto.value }}{{ $json.product.netto.unit }}\n\nIngredients:\n{{ $json.ingredients.map(i => `- ${i.name} (${i.percentage}%): ${i.purpose}`).join('\\n') }}\n\nProvide:\n1. Formulation recommendations\n2. Ingredient synergies\n3. Stability considerations\n4. Manufacturing process\n5. Quality control points\n6. Shelf life estimation"
+      },
+      "name": "AI Product Blueprint",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "resource": "text",
+        "operation": "message",
+        "model": "gpt-4",
+        "prompt": "=Analyze the market opportunity for:\n\nProduct: {{ $json.product.formType }} with {{ $json.product.functions.join(', ') }}\n\nTarget Market:\n- Demographics: {{ $json.market.gender }}, {{ $json.market.ageRanges.join(', ') }}\n- Geography: {{ $json.market.location.country }}, {{ $json.market.location.region }}\n\nDistribution: {{ $json.business.distribution }}\n\nProvide:\n1. Market size estimation\n2. Target audience insights\n3. Competitive landscape\n4. Pricing strategy\n5. Distribution channel recommendations\n6. Marketing approach"
+      },
+      "name": "AI Market Analysis",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [1050, 400]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Check regulatory requirements\nconst payload = $input.item.json;\nconst regulatory = payload.business.regulatory || [];\n\nconst checks = {\n  submissionId: payload.submissionId,\n  country: payload.market.location.country,\n  requirements: [],\n  status: 'pending'\n};\n\n// Indonesia specific checks\nif (payload.market.location.country === 'ID') {\n  if (regulatory.includes('BPOM')) {\n    checks.requirements.push({\n      authority: 'BPOM',\n      type: 'Product Registration',\n      status: 'required',\n      estimatedTime: '6-12 months',\n      documents: [\n        'Product formulation',\n        'Manufacturing facility license',\n        'Safety assessment',\n        'Stability test results'\n      ]\n    });\n  }\n  \n  if (regulatory.includes('Halal')) {\n    checks.requirements.push({\n      authority: 'MUI/LPPOM',\n      type: 'Halal Certification',\n      status: 'required',\n      estimatedTime: '3-6 months',\n      documents: [\n        'Ingredient list with sources',\n        'Manufacturing process',\n        'Facility audit'\n      ]\n    });\n  }\n}\n\nchecks.status = 'completed';\nreturn { json: checks };"
+      },
+      "name": "Regulatory Check",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1050, 500]
+    },
+    {
+      "parameters": {},
+      "name": "Merge Analysis Results",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [1250, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Combine all analysis results\nconst items = $input.all();\n\nconst report = {\n  submissionId: items[0].json.submissionId,\n  generatedAt: new Date().toISOString(),\n  environment: items[0].json.environment,\n  \n  sections: {\n    brandAnalysis: items.find(i => i.json.brandAnalysis)?.json.brandAnalysis || 'N/A',\n    productBlueprint: items.find(i => i.json.productBlueprint)?.json.productBlueprint || 'N/A',\n    marketAnalysis: items.find(i => i.json.marketAnalysis)?.json.marketAnalysis || 'N/A',\n    regulatoryCheck: items.find(i => i.json.requirements)?.json || {}\n  },\n  \n  summary: {\n    totalSections: 4,\n    completedSections: 4,\n    status: 'completed'\n  }\n};\n\nreturn { json: report };"
+      },
+      "name": "Compile Report",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1450, 300]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "table": "submissions",
+        "columns": "status,completed_at,report_data",
+        "values": "completed,={{ new Date().toISOString() }},={{ JSON.stringify($json) }}"
+      },
+      "name": "Update Database",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [1650, 300],
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "Production Database"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendEmail",
+        "fromEmail": "noreply@lunarai.com",
+        "toEmail": "={{ $json.contactEmail }}",
+        "subject": "Your LunarAI Beauty Analysis is Ready",
+        "emailFormat": "html",
+        "html": "=<h2>Your Analysis is Complete!</h2>\n<p>Hi {{ $json.brand.name }} team,</p>\n<p>Your skincare product analysis has been completed.</p>\n<p><strong>Submission ID:</strong> {{ $json.submissionId }}</p>\n<p><strong>Environment:</strong> {{ $json.environment }}</p>\n<p>View your full report at: <a href=\"https://app.lunarai.com/result/{{ $json.submissionId }}\">Click here</a></p>\n<br>\n<p>Best regards,<br>LunarAI Beauty Team</p>"
+      },
+      "name": "Send Email Notification",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [1850, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  success: true,\n  submissionId: $json.submissionId,\n  status: 'completed',\n  message: 'Analysis completed successfully',\n  reportUrl: `https://app.lunarai.com/result/${$json.submissionId}`\n} }}"
+      },
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2050, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Error handler\nconst error = $input.item.json.error || 'Unknown error';\nconst submissionId = $input.item.json.submissionId || 'unknown';\n\nconsole.error('❌ Workflow error:', error);\nconsole.error('📝 Submission ID:', submissionId);\n\n// Update database with error status\nreturn {\n  json: {\n    submissionId,\n    status: 'error',\n    error: error.toString(),\n    timestamp: new Date().toISOString()\n  }\n};"
+      },
+      "name": "Error Handler",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1450, 500]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Validate Payload", "type": "main", "index": 0 }]]
+    },
+    "Validate Payload": {
+      "main": [[{ "node": "Prepare Analysis Context", "type": "main", "index": 0 }]]
+    },
+    "Prepare Analysis Context": {
+      "main": [[{ "node": "Split Analysis Tasks", "type": "main", "index": 0 }]]
+    },
+    "Split Analysis Tasks": {
+      "main": [
+        [
+          { "node": "AI Brand Analysis", "type": "main", "index": 0 },
+          { "node": "AI Product Blueprint", "type": "main", "index": 0 },
+          { "node": "AI Market Analysis", "type": "main", "index": 0 },
+          { "node": "Regulatory Check", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "AI Brand Analysis": {
+      "main": [[{ "node": "Merge Analysis Results", "type": "main", "index": 0 }]]
+    },
+    "AI Product Blueprint": {
+      "main": [[{ "node": "Merge Analysis Results", "type": "main", "index": 1 }]]
+    },
+    "AI Market Analysis": {
+      "main": [[{ "node": "Merge Analysis Results", "type": "main", "index": 2 }]]
+    },
+    "Regulatory Check": {
+      "main": [[{ "node": "Merge Analysis Results", "type": "main", "index": 3 }]]
+    },
+    "Merge Analysis Results": {
+      "main": [[{ "node": "Compile Report", "type": "main", "index": 0 }]]
+    },
+    "Compile Report": {
+      "main": [[{ "node": "Update Database", "type": "main", "index": 0 }]]
+    },
+    "Update Database": {
+      "main": [[{ "node": "Send Email Notification", "type": "main", "index": 0 }]]
+    },
+    "Send Email Notification": {
+      "main": [[{ "node": "Respond to Webhook", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "Error Handler"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "LBF",
+      "id": "1"
+    },
+    {
+      "name": "Skincare",
+      "id": "2"
+    },
+    {
+      "name": "AI Analysis",
+      "id": "3"
+    }
+  ],
+  "meta": {
+    "instanceId": "your-instance-id"
+  },
+  "id": "1",
+  "active": true,
+  "createdAt": "2024-01-20T10:00:00.000Z",
+  "updatedAt": "2024-01-20T10:00:00.000Z"
+}

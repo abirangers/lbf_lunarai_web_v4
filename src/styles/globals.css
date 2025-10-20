@@ -1,0 +1,211 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Shadcn UI variables - White dominant with blue accents */
+    --background: 0 0% 100%;
+    --foreground: 215 25% 27%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 27%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 27%;
+    --primary: 210 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 195 100% 50%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 210 40% 98%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 195 100% 95%;
+    --accent-foreground: 210 100% 40%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 210 40% 90%;
+    --input: 210 40% 95%;
+    --ring: 210 100% 50%;
+    --radius: 0.75rem;
+
+    /* LunarAI Beauty Business Analysis Color System - Cosmetic/Skincare Vibes */
+    --e-global-color-primary: #4A5568;
+    --e-global-color-secondary: #1A202C;
+    --e-global-color-text: #2D3748;
+    --e-global-color-accent: #E6F7FF;
+    --e-global-color-d49ac81: #0080FF;
+    --e-global-color-332724a: #00D4FF;
+    --e-global-color-4d462f5: #F7FAFC;
+    --e-global-color-cfa1f76: #FFFFFF;
+    --e-global-color-854745e: #EDF2F7;
+    --e-global-color-044b931: #0A1929;
+    --e-global-color-9286677: #0066CC;
+    --e-global-color-a2c0d56: #0080FF;
+    --e-global-color-4ca25af: #00D4FF;
+    
+    /* Additional cosmetic-inspired colors */
+    --luna-blue-primary: #0080FF;
+    --luna-blue-light: #4DA6FF;
+    --luna-blue-lighter: #B3D9FF;
+    --luna-cyan: #00D4FF;
+    --luna-cyan-light: #66E5FF;
+    --luna-white: #FFFFFF;
+    --luna-gray-50: #F7FAFC;
+    --luna-gray-100: #EDF2F7;
+    --luna-gray-200: #E2E8F0;
+    --luna-gray-600: #4A5568;
+    --luna-gray-900: #1A202C;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-brand-offWhite text-foreground;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI',
+      sans-serif;
+  }
+}
+
+@layer utilities {
+  .glass-effect {
+    @apply bg-white/40 backdrop-blur-xl border border-white/20 shadow-lg;
+  }
+
+  .glass-dark {
+    @apply bg-black/20 backdrop-blur-xl border border-white/10 shadow-2xl;
+  }
+
+  .glow-blue {
+    box-shadow: 0 0 20px rgba(34, 93, 169, 0.3), 0 0 40px rgba(34, 93, 169, 0.1);
+  }
+
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(104, 200, 215, 0.3), 0 0 40px rgba(104, 200, 215, 0.1);
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-blue via-brand-cyan to-brand-accentCyan;
+  }
+
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 3s ease infinite;
+  }
+
+  @keyframes gradient {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Custom Scrollbar */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.2);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(59, 130, 246, 0.4);
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(59, 130, 246, 0.2) transparent;
+  }
+}
+
+/* Custom focus styles */
+@layer components {
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-brand-blue focus:ring-offset-2 focus:ring-offset-brand-offWhite;
+  }
+
+  .input-field {
+    @apply rounded-lg px-4 py-3 text-sm focus-ring transition-all duration-200 border-2 border-gray-500 bg-white hover:border-gray-600 focus:border-blue-500 shadow-lg hover:shadow-xl;
+  }
+
+  .button-primary {
+    @apply glass-effect rounded-lg px-6 py-3 font-medium text-brand-secondary hover:bg-white/60 active:scale-95 transition-all duration-200 glow-blue;
+  }
+
+  .button-secondary {
+    @apply glass-dark rounded-lg px-6 py-3 font-medium text-white hover:bg-black/30 active:scale-95 transition-all duration-200;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection styling */
+::selection {
+  background-color: rgba(34, 93, 169, 0.3);
+  color: inherit;
+}
+
+/* Loading states */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.skeleton {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.1) 4%,
+    rgba(255, 255, 255, 0.3) 25%,
+    rgba(255, 255, 255, 0.1) 36%
+  );
+  background-size: 1000px 100%;
+}

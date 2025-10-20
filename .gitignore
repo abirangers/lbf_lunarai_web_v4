@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+.next/
+.nuxt/
+out/
+dist/
+.turbo/
+.cache/
+coverage/
+
+# Runtime
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment files
+.env.local
+.env.development
+.env.production
+.env.test
+.env.*
+!.env.example
+
+# IDE / tooling
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Framework specific
+.vercel/
+.swc/
+
+# Typescript
+*.tsbuildinfo

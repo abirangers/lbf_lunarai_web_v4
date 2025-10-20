@@ -18,7 +18,10 @@
     "generate-sample": "tsx scripts/generate-sample.ts",
     "postinstall": "echo 'Dependencies installed successfully'",
     "check-build": "node scripts/check-build.js",
-    "vercel-build": "next build"
+    "vercel-build": "next build",
+    "clean": "node scripts/clean-build.js",
+    "clean:build": "node scripts/clean-build.js && npm run build",
+    "clean:dev": "node scripts/clean-build.js && npm run dev"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",

@@ -1,7 +1,7 @@
 import { neon } from '@neondatabase/serverless'
 import { drizzle } from 'drizzle-orm/neon-http'
 import { eq, desc } from 'drizzle-orm'
-import * as schema from '../../db/schema'
+import * as schema from '@db/schema'
 
 // Allow initialization without DATABASE_URL for mock mode
 let db: ReturnType<typeof drizzle> | null = null
@@ -41,10 +41,7 @@ export async function updateSubmissionStatus(id: string, status: string) {
   return updated
 }
 
-export async function updateWorkflowRun(
-  id: string,
-  data: Partial<schema.WorkflowRun>
-) {
+export async function updateWorkflowRun(id: string, data: Partial<schema.WorkflowRun>) {
   if (!db) throw new Error('Database not initialized')
   const [updated] = await db
     .update(schema.workflowRuns)

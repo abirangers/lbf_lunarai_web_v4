@@ -25,6 +25,13 @@ const nextConfig = {
     NEXT_PUBLIC_FORM_VERSION: process.env.NEXT_PUBLIC_FORM_VERSION || '1.0.0',
     NEXT_PUBLIC_DEFAULT_LANGUAGE: process.env.NEXT_PUBLIC_DEFAULT_LANGUAGE || 'id',
   },
+  // Build configuration
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+  eslint: {
+    ignoreDuringBuilds: false,
+  },
 }
 
 module.exports = nextConfig

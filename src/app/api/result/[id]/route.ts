@@ -7,12 +7,9 @@ import {
 } from '@/lib/persistence'
 import { logReportView } from '@/lib/analytics'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params
+    const { id } = await params
     const { searchParams } = new URL(request.url)
     const fields = searchParams.get('fields')
 
@@ -39,10 +36,13 @@ export async function GET(
     const sections = await getReportSections(id)
 
     // Transform sections into structured object
-    const sectionData = sections.reduce((acc, section) => {
-      acc[section.sectionType] = section.sectionData
-      return acc
-    }, {} as Record<string, any>)
+    const sectionData = sections.reduce(
+      (acc, section) => {
+        acc[section.sectionType] = section.sectionData
+        return acc
+      },
+      {} as Record<string, any>
+    )
 
     // Log view
     logReportView(id)

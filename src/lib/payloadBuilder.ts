@@ -3,8 +3,8 @@ import type { SubmissionPayload } from '@/types/submission'
 
 export interface FormValues {
   brandName: string
+  productName: string
   brandVoice: string
-  brandValues: string
   functions: string[]
   formType: string
   packagingType: string
@@ -16,25 +16,11 @@ export interface FormValues {
   colorHex?: string
   gender: string
   ageRanges: string[]
-  country: string
-  region: string
-  city: string
-  launchTimeline?: string
-  launchYear?: string
   targetRetailPrice?: number
-  pilotBatchSize?: number
   moqExpectation?: number
-  distributionFocus: 'Domestic Retail' | 'ASEAN Export' | 'Global Prestige' | 'D2C Online'
-  sustainabilityPriority: number
-  regulatoryPriority: string[]
   texturePreference?: string
   fragranceProfile?: string
-  claimEmphasis?: string[]
   aiImageStyle?: string
-  requiresClinicalStudy: boolean
-  needsHalalCertification: boolean
-  preferredChannels: string[]
-  requestedDeliverables: string[]
   notesForDesignTeam?: string
   formulaNarrative: string
   benchmark?: string
@@ -64,8 +50,8 @@ export function buildSubmissionPayload(formValues: FormValues): SubmissionPayloa
     targetEnvironment: formValues.targetEnvironment,
     brand: {
       name: formValues.brandName,
+      productName: formValues.productName,
       voice: formValues.brandVoice,
-      values: formValues.brandValues,
     },
     productBlueprint: {
       functions: formValues.functions,
@@ -85,29 +71,12 @@ export function buildSubmissionPayload(formValues: FormValues): SubmissionPayloa
       },
       gender: formValues.gender,
       ageRanges: formValues.ageRanges,
-      location: {
-        country: formValues.country,
-        region: formValues.region,
-        city: formValues.city,
-      },
-      launchTimeline: formValues.launchTimeline,
       targetRetailPrice: formValues.targetRetailPrice,
-      pilotBatchSize: formValues.pilotBatchSize,
       moqExpectation: formValues.moqExpectation,
-      distributionFocus: formValues.distributionFocus,
-      sustainabilityPriority: formValues.sustainabilityPriority,
-      regulatoryPriority: formValues.regulatoryPriority,
       texturePreference: formValues.texturePreference,
       fragranceProfile: formValues.fragranceProfile,
-      claimEmphasis: formValues.claimEmphasis,
       aiImageStyle: formValues.aiImageStyle,
-      requiresClinicalStudy: formValues.requiresClinicalStudy,
-      needsHalalCertification: formValues.needsHalalCertification,
       referenceUpload: formValues.referenceFiles,
-    },
-    collaboration: {
-      preferredChannels: formValues.preferredChannels,
-      requestedDeliverables: formValues.requestedDeliverables,
       notesForDesignTeam: formValues.notesForDesignTeam,
     },
     concept: {

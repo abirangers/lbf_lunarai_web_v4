@@ -7,9 +7,9 @@ import {
 } from '@/lib/persistence'
 import { logReportView } from '@/lib/analytics'
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const { id } = await params
+    const { id } = params
     const { searchParams } = new URL(request.url)
     const fields = searchParams.get('fields')
 

@@ -6,8 +6,8 @@ export const SubmissionPayloadSchema = z.object({
   targetEnvironment: z.enum(['test', 'production']),
   brand: z.object({
     name: z.string().min(1, 'Brand name is required'),
+    productName: z.string().min(1, 'Product name is required'),
     voice: z.string().min(1, 'Brand voice is required'),
-    values: z.string().min(1, 'Brand values are required'),
   }),
   productBlueprint: z.object({
     functions: z.array(z.string()).min(1, 'Select at least one function'),
@@ -27,29 +27,12 @@ export const SubmissionPayloadSchema = z.object({
     }),
     gender: z.string().min(1, 'Gender is required'),
     ageRanges: z.array(z.string()).min(1, 'Select at least one age range'),
-    location: z.object({
-      country: z.string().min(1, 'Country is required'),
-      region: z.string().min(1, 'Region is required'),
-      city: z.string().min(1, 'City is required'),
-    }),
-    launchTimeline: z.string().optional(),
     targetRetailPrice: z.number().optional(),
-    pilotBatchSize: z.number().optional(),
     moqExpectation: z.number().optional(),
-    distributionFocus: z.enum([
-      'Domestic Retail',
-      'ASEAN Export',
-      'Global Prestige',
-      'D2C Online',
-    ]),
-    sustainabilityPriority: z.number().min(0).max(100),
-    regulatoryPriority: z.array(z.string()),
     texturePreference: z.string().optional(),
     fragranceProfile: z.string().optional(),
-    claimEmphasis: z.array(z.string()).optional(),
     aiImageStyle: z.string().optional(),
-    requiresClinicalStudy: z.boolean(),
-    needsHalalCertification: z.boolean(),
+    notesForDesignTeam: z.string().optional(),
     referenceUpload: z
       .array(
         z.object({
@@ -59,11 +42,6 @@ export const SubmissionPayloadSchema = z.object({
         })
       )
       .optional(),
-  }),
-  collaboration: z.object({
-    preferredChannels: z.array(z.string()).min(1, 'Select at least one channel'),
-    requestedDeliverables: z.array(z.string()).min(1, 'Select at least one deliverable'),
-    notesForDesignTeam: z.string().optional(),
   }),
   concept: z.object({
     formulaNarrative: z.string().min(1, 'Formula narrative is required'),

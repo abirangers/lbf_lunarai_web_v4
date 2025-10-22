@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3004",
+    "ngrok": "echo ======================================== && echo   NGROK TUNNEL - Copy URL dibawah! && echo ======================================== && \"C:\\Users\\Administrator\\Documents\\n8n-docker\\ngrok.exe\" http 3004",
     "build": "next build",
     "start": "next start -p 3004",
     "lint": "next lint",

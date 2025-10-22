@@ -5,6 +5,7 @@ import {
   createSubmissionPayload,
   createWorkflowRun,
   createAuditLog,
+  createSectionProgress,
 } from '@/lib/persistence'
 import { dispatchToWebhook } from '@/lib/n8n'
 import { logSubmission } from '@/lib/analytics'
@@ -31,14 +32,14 @@ export async function POST(request: NextRequest) {
     if (MOCK_MODE) {
       console.log('🎭 MOCK MODE: Backend not configured, returning mock response')
       console.log('Submission payload:', JSON.stringify(payload, null, 2))
-      
+
       return NextResponse.json({
         submissionId: payload.submissionId,
         mode: payload.targetEnvironment,
         status: 'queued',
         message: '✅ Form submitted successfully (Mock Mode - No backend configured)',
         mockMode: true,
-        note: 'Configure DATABASE_URL and N8N_PRODUCTION_WEBHOOK to enable real backend'
+        note: 'Configure DATABASE_URL and N8N_PRODUCTION_WEBHOOK to enable real backend',
       })
     }
 
@@ -57,6 +58,17 @@ export async function POST(request: NextRequest) {
       submissionId: submission.id,
       payload: payload as any,
     })
+
+    // Create section progress tracker (optional - for streaming support)
+    try {
+      await createSectionProgress(submission.id)
+    } catch (error) {
+      console.warn(
+        '⚠️ Section progress tracking not available (table not created yet):',
+        error.message
+      )
+      // Continue without progress tracking - not critical for basic functionality
+    }
 
     // Determine webhook URL
     const webhookUrl =
@@ -80,7 +92,7 @@ export async function POST(request: NextRequest) {
       console.error('Webhook dispatch error:', error)
       webhookResponse = {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       }
     }
 
@@ -104,7 +116,8 @@ export async function POST(request: NextRequest) {
         brandName: payload.brand.name,
         webhookSuccess: webhookResponse.success,
       },
-      ipAddress: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || undefined,
+      ipAddress:
+        request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || undefined,
       userAgent: request.headers.get('user-agent') || undefined,
     })
 

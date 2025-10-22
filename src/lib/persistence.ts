@@ -1,17 +1,6 @@
-import { neon } from '@neondatabase/serverless'
-import { drizzle } from 'drizzle-orm/neon-http'
-import { eq, desc } from 'drizzle-orm'
+import { eq, desc, sql } from 'drizzle-orm'
+import { db } from './db'
 import * as schema from '@db/schema'
-
-// Allow initialization without DATABASE_URL for mock mode
-let db: ReturnType<typeof drizzle> | null = null
-
-if (process.env.DATABASE_URL) {
-  const sql = neon(process.env.DATABASE_URL)
-  db = drizzle(sql, { schema })
-}
-
-export { db }
 
 export async function createSubmission(data: schema.NewSubmission) {
   if (!db) throw new Error('Database not initialized')
@@ -99,4 +88,69 @@ export async function createAuditLog(data: schema.NewAuditLog) {
   if (!db) throw new Error('Database not initialized')
   const [log] = await db.insert(schema.auditLogs).values(data).returning()
   return log
+}
+
+// Section Progress functions
+export async function createSectionProgress(submissionId: string) {
+  if (!db) throw new Error('Database not initialized')
+  const [progress] = await db
+    .insert(schema.sectionProgress)
+    .values({
+      submissionId,
+      totalSections: 12,
+      completedSections: 0,
+      failedSections: 0,
+      sectionsStatus: {},
+    })
+    .returning()
+  return progress
+}
+
+export async function getSectionProgress(submissionId: string) {
+  if (!db) throw new Error('Database not initialized')
+  const [progress] = await db
+    .select()
+    .from(schema.sectionProgress)
+    .where(eq(schema.sectionProgress.submissionId, submissionId))
+  return progress
+}
+
+export async function updateSectionProgress(
+  submissionId: string,
+  sectionType: string,
+  status: 'completed' | 'failed'
+) {
+  if (!db) throw new Error('Database not initialized')
+
+  // First, get current progress
+  const current = await getSectionProgress(submissionId)
+  if (!current) {
+    throw new Error('Section progress not found')
+  }
+
+  // Update counts
+  const updates: any = {
+    updatedAt: new Date(),
+  }
+
+  if (status === 'completed') {
+    updates.completedSections = current.completedSections + 1
+  } else {
+    updates.failedSections = current.failedSections + 1
+  }
+
+  // Update sections status
+  const newStatus = {
+    ...((current.sectionsStatus as any) || {}),
+    [sectionType]: status,
+  }
+  updates.sectionsStatus = newStatus
+
+  const [updated] = await db
+    .update(schema.sectionProgress)
+    .set(updates)
+    .where(eq(schema.sectionProgress.submissionId, submissionId))
+    .returning()
+
+  return updated
 }

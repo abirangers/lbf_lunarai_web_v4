@@ -25,6 +25,14 @@ import {
   Boxes,
   TrendingUp,
   Zap,
+  Sun,
+  Waves,
+  Layers,
+  Circle,
+  Pill,
+  FlaskConical,
+  Disc,
+  Wind,
 } from 'lucide-react'
 import { useSimulator } from '@/contexts/SimulatorContext'
 import { buildSubmissionPayload, type FormValues } from '@/lib/payloadBuilder'
@@ -50,7 +58,6 @@ import { formatCurrency } from '@/lib/utils'
 const formSchema = z.object({
   brandName: z.string().min(1, 'Nama brand wajib diisi'),
   productName: z.string().min(1, 'Nama produk wajib diisi'),
-  brandVoice: z.string().min(1, 'Voice brand wajib dipilih'),
   functions: z.array(z.string()).min(1, 'Pilih minimal 1 fungsi'),
   formType: z.string().min(1, 'Tipe produk wajib dipilih'),
   packagingType: z.string().min(1, 'Jenis kemasan wajib dipilih'),
@@ -215,22 +222,6 @@ export function SimulatorForm() {
             <p className="text-sm text-red-500">{form.formState.errors.productName.message}</p>
           )}
         </div>
-
-        <SelectWithOther
-          label="Voice Brand *"
-          value={form.watch('brandVoice') || ''}
-          onChange={(value) => form.setValue('brandVoice', value)}
-          options={[
-            { value: 'professional', label: 'Profesional & Klinis' },
-            { value: 'friendly', label: 'Ramah & Mudah Didekati' },
-            { value: 'luxury', label: 'Mewah & Eksklusif' },
-            { value: 'playful', label: 'Fun & Energik' },
-            { value: 'natural', label: 'Natural & Organik' },
-          ]}
-          placeholder="Pilih voice brand..."
-          error={form.formState.errors.brandVoice?.message}
-          helperText="Tone komunikasi brand Anda dengan customer"
-        />
       </div>
 
       {/* Product Blueprint Section */}
@@ -255,10 +246,22 @@ export function SimulatorForm() {
             { value: 'Cream', label: 'Krim', icon: Heart },
             { value: 'Gel', label: 'Gel', icon: Beaker },
             { value: 'Lotion', label: 'Lotion', icon: Package },
-            { value: 'Stick', label: 'Stick', icon: Lightbulb },
-            { value: 'Foam', label: 'Busa', icon: Sparkles },
-            { value: 'Essence', label: 'Essence', icon: Droplets },
-            { value: 'Mist', label: 'Mist', icon: Sparkles },
+            { value: 'Essence', label: 'Essence', icon: Sparkles },
+            { value: 'Mist', label: 'Mist', icon: Wind },
+            { value: 'Toner', label: 'Toner', icon: Droplets },
+            { value: 'Foam', label: 'Busa', icon: Waves },
+            { value: 'Oil', label: 'Oil', icon: Circle },
+            { value: 'Balm', label: 'Balm', icon: Heart },
+            { value: 'Stick', label: 'Stick', icon: Cylinder },
+            { value: 'Sunscreen', label: 'Sunscreen', icon: Sun },
+            { value: 'Compact', label: 'Compact', icon: Disc },
+            { value: 'Powder', label: 'Powder', icon: Sparkles },
+            { value: 'Mask', label: 'Mask', icon: Layers },
+            { value: 'Scrub', label: 'Scrub', icon: CircleDot },
+            { value: 'Cleanser', label: 'Cleanser', icon: Droplets },
+            { value: 'Emulsion', label: 'Emulsion', icon: Beaker },
+            { value: 'Ampoule', label: 'Ampoule', icon: FlaskConical },
+            { value: 'Capsule', label: 'Kapsul', icon: Pill },
           ]}
           error={form.formState.errors.formType?.message}
           horizontal
@@ -282,10 +285,17 @@ export function SimulatorForm() {
             { value: 'jar', label: 'Jar', icon: Container },
             { value: 'tube', label: 'Tube', icon: Cylinder },
             { value: 'spray', label: 'Spray', icon: Droplets },
-            { value: 'stick', label: 'Stick', icon: CircleDot },
-            { value: 'bottle', label: 'Bottle', icon: Package },
-            { value: 'sachet', label: 'Sachet', icon: Box },
             { value: 'pump-bottle', label: 'Pump Bottle', icon: Boxes },
+            { value: 'bottle', label: 'Bottle', icon: Package },
+            { value: 'stick', label: 'Stick', icon: CircleDot },
+            { value: 'sachet', label: 'Sachet', icon: Box },
+            { value: 'pouch', label: 'Pouch', icon: Box },
+            { value: 'compact', label: 'Compact', icon: Disc },
+            { value: 'cushion', label: 'Cushion', icon: Circle },
+            { value: 'palette', label: 'Palette', icon: Palette },
+            { value: 'pen', label: 'Pen', icon: Pipette },
+            { value: 'roll-on', label: 'Roll-On', icon: Circle },
+            { value: 'ampoule', label: 'Ampoule', icon: FlaskConical },
           ]}
           error={form.formState.errors.packagingType?.message}
           horizontal
@@ -436,25 +446,10 @@ export function SimulatorForm() {
           <div className="p-2 bg-purple-100 rounded-lg">
             <Beaker className="h-5 w-5 text-purple-600" />
           </div>
-          <div className="flex-1">
+          <div>
             <h3 className="text-lg font-semibold text-gray-900">Konsep & Formula</h3>
-            <p className="text-sm text-gray-500">Deskripsikan produk Anda, AI akan membantu</p>
+            <p className="text-sm text-gray-500">Deskripsikan produk Anda</p>
           </div>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="border-purple-300 text-purple-700 hover:bg-purple-50"
-            onClick={() => {
-              // TODO: Implement AI generation based on previous form data
-              alert(
-                'Fitur AI Generate akan mengisi deskripsi berdasarkan data form yang sudah diisi'
-              )
-            }}
-          >
-            <Sparkles className="h-4 w-4 mr-2" />
-            Generate dengan AI
-          </Button>
         </div>
 
         {/* // Fill concept formula */}

@@ -62,7 +62,7 @@ export const sectionProgress = pgTable('section_progress', {
   submissionId: uuid('submission_id')
     .notNull()
     .references(() => submissions.id, { onDelete: 'cascade' }),
-  totalSections: integer('total_sections').notNull().default(12),
+  totalSections: integer('total_sections').notNull().default(11),
   completedSections: integer('completed_sections').notNull().default(0),
   failedSections: integer('failed_sections').notNull().default(0),
   sectionsStatus: jsonb('sections_status').notNull().default({}),

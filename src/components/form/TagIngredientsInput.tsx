@@ -5,7 +5,13 @@ import { X, Plus, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface Ingredient {
@@ -27,7 +33,11 @@ const INGREDIENTS_DATABASE = [
   { name: 'Hyaluronic Acid', inciName: 'Sodium Hyaluronate', purpose: 'Hydrating, Plumping' },
   { name: 'Vitamin C', inciName: 'Ascorbic Acid', purpose: 'Brightening, Antioxidant' },
   { name: 'Retinol', inciName: 'Retinol', purpose: 'Anti-aging, Skin renewal' },
-  { name: 'Centella Asiatica', inciName: 'Centella Asiatica Extract', purpose: 'Soothing, Healing' },
+  {
+    name: 'Centella Asiatica',
+    inciName: 'Centella Asiatica Extract',
+    purpose: 'Soothing, Healing',
+  },
   { name: 'Peptides', inciName: 'Palmitoyl Pentapeptide-4', purpose: 'Anti-aging, Firming' },
   { name: 'Alpha Arbutin', inciName: 'Alpha-Arbutin', purpose: 'Brightening, Even tone' },
   { name: 'Ceramides', inciName: 'Ceramide NP', purpose: 'Barrier repair, Moisturizing' },
@@ -35,16 +45,28 @@ const INGREDIENTS_DATABASE = [
   { name: 'Salicylic Acid', inciName: 'Salicylic Acid', purpose: 'Exfoliating, Acne treatment' },
   { name: 'AHA (Glycolic Acid)', inciName: 'Glycolic Acid', purpose: 'Exfoliating, Brightening' },
   { name: 'BHA', inciName: 'Beta Hydroxy Acid', purpose: 'Pore cleansing, Exfoliating' },
-  { name: 'Tranexamic Acid', inciName: 'Tranexamic Acid', purpose: 'Brightening, Anti-pigmentation' },
+  {
+    name: 'Tranexamic Acid',
+    inciName: 'Tranexamic Acid',
+    purpose: 'Brightening, Anti-pigmentation',
+  },
   { name: 'Kojic Acid', inciName: 'Kojic Acid', purpose: 'Brightening, Melanin inhibitor' },
   { name: 'Azelaic Acid', inciName: 'Azelaic Acid', purpose: 'Acne treatment, Brightening' },
   { name: 'Vitamin E', inciName: 'Tocopherol', purpose: 'Antioxidant, Moisturizing' },
   { name: 'Collagen', inciName: 'Hydrolyzed Collagen', purpose: 'Anti-aging, Firming' },
   { name: 'Snail Mucin', inciName: 'Snail Secretion Filtrate', purpose: 'Hydrating, Repairing' },
   { name: 'Propolis', inciName: 'Propolis Extract', purpose: 'Antibacterial, Soothing' },
-  { name: 'Tea Tree Oil', inciName: 'Melaleuca Alternifolia Leaf Oil', purpose: 'Antibacterial, Acne treatment' },
+  {
+    name: 'Tea Tree Oil',
+    inciName: 'Melaleuca Alternifolia Leaf Oil',
+    purpose: 'Antibacterial, Acne treatment',
+  },
   { name: 'Aloe Vera', inciName: 'Aloe Barbadensis Leaf Extract', purpose: 'Soothing, Hydrating' },
-  { name: 'Green Tea Extract', inciName: 'Camellia Sinensis Leaf Extract', purpose: 'Antioxidant, Anti-inflammatory' },
+  {
+    name: 'Green Tea Extract',
+    inciName: 'Camellia Sinensis Leaf Extract',
+    purpose: 'Antioxidant, Anti-inflammatory',
+  },
   { name: 'Caffeine', inciName: 'Caffeine', purpose: 'De-puffing, Energizing' },
   { name: 'Bakuchiol', inciName: 'Bakuchiol', purpose: 'Retinol alternative, Anti-aging' },
   { name: 'Squalane', inciName: 'Squalane', purpose: 'Moisturizing, Barrier repair' },
@@ -72,7 +94,7 @@ export function TagIngredientsInput({ value, onChange }: TagIngredientsInputProp
     onChange(value.filter((_, i) => i !== index))
   }
 
-  const selectFromDatabase = (ing: typeof INGREDIENTS_DATABASE[0]) => {
+  const selectFromDatabase = (ing: (typeof INGREDIENTS_DATABASE)[0]) => {
     setCurrentIngredient({
       name: ing.name,
       inciName: ing.inciName,
@@ -140,45 +162,39 @@ export function TagIngredientsInput({ value, onChange }: TagIngredientsInputProp
           className="p-4 bg-white rounded-xl border-2 border-blue-200 space-y-4"
         >
           <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-700">Nama Bahan *</Label>
-            <Select
-              value={searchQuery}
-              onValueChange={(val) => {
-                const selected = INGREDIENTS_DATABASE.find((ing) => ing.name === val)
-                if (selected) {
-                  selectFromDatabase(selected)
-                } else {
-                  setSearchQuery(val)
-                  setCurrentIngredient({ ...currentIngredient, name: val })
-                }
-              }}
-            >
-              <SelectTrigger className="input-field bg-white border-2">
-                <SelectValue placeholder="Pilih atau ketik nama bahan..." />
-              </SelectTrigger>
-              <SelectContent className="max-h-[300px]">
-                {filteredIngredients.map((ing, idx) => (
-                  <SelectItem key={idx} value={ing.name}>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{ing.name}</span>
-                      <span className="text-xs text-gray-500">{ing.inciName}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-                <SelectItem value="__custom__" className="text-blue-600 font-medium">
-                  ✏️ Input Manual
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            {searchQuery === '__custom__' && (
-              <Input
-                value={currentIngredient.name || ''}
-                onChange={(e) => setCurrentIngredient({ ...currentIngredient, name: e.target.value })}
-                placeholder="Ketik nama bahan..."
-                className="input-field bg-white border-2 mt-2"
-                autoFocus
-              />
-            )}
+            <div className="flex items-center justify-between">
+              <Label className="text-sm font-medium text-gray-700">Nama Bahan *</Label>
+              <Select
+                value=""
+                onValueChange={(val) => {
+                  const selected = INGREDIENTS_DATABASE.find((ing) => ing.name === val)
+                  if (selected) {
+                    selectFromDatabase(selected)
+                  }
+                }}
+              >
+                <SelectTrigger className="w-[200px] h-8 text-xs border-blue-300 text-blue-600">
+                  <SelectValue placeholder="📚 Pilih dari database" />
+                </SelectTrigger>
+                <SelectContent className="max-h-[300px]">
+                  {INGREDIENTS_DATABASE.map((ing, idx) => (
+                    <SelectItem key={idx} value={ing.name}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{ing.name}</span>
+                        <span className="text-xs text-gray-500">{ing.inciName}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Input
+              value={currentIngredient.name || ''}
+              onChange={(e) => setCurrentIngredient({ ...currentIngredient, name: e.target.value })}
+              placeholder="Ketik nama bahan..."
+              className="input-field bg-white border-2"
+              autoFocus
+            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -186,7 +202,9 @@ export function TagIngredientsInput({ value, onChange }: TagIngredientsInputProp
               <Label className="text-sm text-gray-600">INCI Name</Label>
               <Input
                 value={currentIngredient.inciName || ''}
-                onChange={(e) => setCurrentIngredient({ ...currentIngredient, inciName: e.target.value })}
+                onChange={(e) =>
+                  setCurrentIngredient({ ...currentIngredient, inciName: e.target.value })
+                }
                 placeholder="Nama internasional"
                 className="input-field bg-white border-2"
               />
@@ -196,7 +214,12 @@ export function TagIngredientsInput({ value, onChange }: TagIngredientsInputProp
               <Input
                 type="number"
                 value={currentIngredient.percentage || ''}
-                onChange={(e) => setCurrentIngredient({ ...currentIngredient, percentage: parseFloat(e.target.value) })}
+                onChange={(e) =>
+                  setCurrentIngredient({
+                    ...currentIngredient,
+                    percentage: parseFloat(e.target.value),
+                  })
+                }
                 placeholder="10"
                 className="input-field bg-white border-2"
                 step="0.1"
@@ -208,7 +231,9 @@ export function TagIngredientsInput({ value, onChange }: TagIngredientsInputProp
             <Label className="text-sm text-gray-600">Fungsi</Label>
             <Input
               value={currentIngredient.purpose || ''}
-              onChange={(e) => setCurrentIngredient({ ...currentIngredient, purpose: e.target.value })}
+              onChange={(e) =>
+                setCurrentIngredient({ ...currentIngredient, purpose: e.target.value })
+              }
               placeholder="Contoh: Brightening, Barrier repair"
               className="input-field bg-white border-2"
             />
@@ -241,7 +266,8 @@ export function TagIngredientsInput({ value, onChange }: TagIngredientsInputProp
       )}
 
       <div className="text-xs text-gray-500 bg-blue-50 p-3 rounded-lg border border-blue-100">
-        💡 <strong>Tips:</strong> Pilih dari database lengkap atau input manual. Bahan akan ditampilkan sebagai tag.
+        💡 <strong>Tips:</strong> Pilih dari database lengkap atau input manual. Bahan akan
+        ditampilkan sebagai tag.
       </div>
     </div>
   )

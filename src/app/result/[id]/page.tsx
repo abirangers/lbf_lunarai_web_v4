@@ -34,7 +34,7 @@ function ResultPageContent({ params }: { params: { id: string } }) {
   const [sections, setSections] = useState<Record<string, SectionData>>({})
   const [progress, setProgress] = useState<ProgressData>({
     completed: 0,
-    total: 12,
+    total: 11,
     failed: 0,
     percentage: 0,
   })
@@ -322,7 +322,7 @@ function ResultPageContent({ params }: { params: { id: string } }) {
           <div className="text-center py-12">
             <Loader2 className="w-12 h-12 animate-spin text-brand-blue mx-auto mb-4" />
             <p className="text-brand-primary">Waiting for sections to generate...</p>
-            <p className="text-sm text-gray-500 mt-2">This usually takes 5-10 minutes</p>
+            <p className="text-sm text-gray-500 mt-2">This usually takes 30-60 seconds</p>
           </div>
         )}
 

@@ -1,10 +1,12 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Check } from 'lucide-react'
+import { Check, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { LucideIcon } from 'lucide-react'
+import { useRef } from 'react'
 
 interface Option {
   value: string
@@ -62,16 +64,52 @@ export function IconSelector({
     4: 'grid-cols-2 md:grid-cols-4',
   }
 
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' })
+    }
+  }
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 300, behavior: 'smooth' })
+    }
+  }
+
   if (horizontal) {
     return (
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <Label className="text-sm font-medium text-gray-700">{label}</Label>
-          {multiple && Array.isArray(value) && (
-            <span className="text-xs text-blue-600 font-medium">{value.length} dipilih</span>
-          )}
+          <div className="flex items-center gap-2">
+            {multiple && Array.isArray(value) && (
+              <span className="text-xs text-blue-600 font-medium">{value.length} dipilih</span>
+            )}
+            <div className="flex gap-1">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={scrollLeft}
+                className="h-7 w-7 p-0"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={scrollRight}
+                className="h-7 w-7 p-0"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         </div>
-        <div className="overflow-x-auto scrollbar-hide pb-2">
+        <div ref={scrollContainerRef} className="overflow-x-auto scrollbar-hide pb-2">
           <div className="flex gap-3 min-w-max">
             {options.map((option) => {
               const Icon = option.icon
@@ -133,7 +171,7 @@ export function IconSelector({
             })}
           </div>
         </div>
-        <p className="text-xs text-gray-500">💡 Scroll horizontal untuk melihat lebih banyak pilihan</p>
+        <p className="text-xs text-gray-500">💡 Scroll horizontal atau gunakan tombol navigasi</p>
         {error && <p className="text-xs text-red-500">{error}</p>}
       </div>
     )
@@ -212,9 +250,7 @@ export function IconSelector({
         })}
       </div>
 
-      {helperText && !error && (
-        <p className="text-xs text-gray-500 mt-2">{helperText}</p>
-      )}
+      {helperText && !error && <p className="text-xs text-gray-500 mt-2">{helperText}</p>}
       {error && <p className="text-xs text-red-500 mt-2">{error}</p>}
     </div>
   )

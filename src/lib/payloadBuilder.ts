@@ -4,7 +4,6 @@ import type { SubmissionPayload } from '@/types/submission'
 export interface FormValues {
   brandName: string
   productName: string
-  brandVoice: string
   functions: string[]
   formType: string
   packagingType: string
@@ -51,7 +50,6 @@ export function buildSubmissionPayload(formValues: FormValues): SubmissionPayloa
     brand: {
       name: formValues.brandName,
       productName: formValues.productName,
-      voice: formValues.brandVoice,
     },
     productBlueprint: {
       functions: formValues.functions,

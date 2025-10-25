@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { db, submissions, reportSections, sectionProgress } from '@/lib/db'
-import { eq } from 'drizzle-orm'
+import { eq, asc } from 'drizzle-orm'
 import { subscribe, unsubscribe } from '@/lib/realtime'
 
 /**
@@ -63,12 +63,12 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
             .select()
             .from(reportSections)
             .where(eq(reportSections.submissionId, submissionId))
-            .orderBy(reportSections.sectionOrder),
+            .orderBy(asc(reportSections.order)),
         ])
 
         const progress = progressData[0] || {
           completedSections: 0,
-          totalSections: 12,
+          totalSections: 11,
           failedSections: 0,
         }
 
@@ -85,7 +85,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
           },
           existingSections: existingSections.map((s) => ({
             sectionType: s.sectionType,
-            order: s.sectionOrder,
+            order: s.order,
           })),
           timestamp: new Date().toISOString(),
         })
@@ -99,7 +99,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
               type: 'section_complete',
               section: {
                 sectionType: section.sectionType,
-                order: section.sectionOrder,
+                order: section.order,
                 data: section.sectionData,
                 metadata: section.metadata,
               },
